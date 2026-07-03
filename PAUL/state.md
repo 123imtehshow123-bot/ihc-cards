@@ -14,9 +14,14 @@ runs the workflow interactively through Claude Code sessions in this repo.
 - Publish targets: X/Twitter + Threads only, via Blotato. Instagram OFF.
 
 ## Known risks / open items
-- Blotato publishing from Claude sessions requires the Blotato connector to
-  be authorized; until then publishing is manual (Claude hands over the card
-  URL + copy).
+- Blotato publishing from Claude sessions is currently blocked, verified
+  2026-07-03: (1) the environment's network policy denies
+  `backend.blotato.com` (proxy CONNECT 403), and (2) no Blotato API key is
+  present in the session (no env var, no connected tool). Fix without new
+  services: in the Claude Code environment settings, allow the
+  `backend.blotato.com` domain and add the existing Blotato API key as a
+  secret env var (e.g. `BLOTATO_API_KEY`). Until then publishing is manual
+  (Claude hands over the card URL + copy after GO).
 - State (`state/*.json`) must be committed+pushed every time it changes;
   session containers are ephemeral.
 
