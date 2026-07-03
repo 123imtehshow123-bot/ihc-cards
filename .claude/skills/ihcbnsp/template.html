@@ -1,0 +1,147 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+@font-face{font-family:'Inter';font-style:normal;font-weight:400;src:url(assets/fonts/Inter-400.woff2) format('woff2');}
+@font-face{font-family:'Inter';font-style:normal;font-weight:600;src:url(assets/fonts/Inter-600.woff2) format('woff2');}
+@font-face{font-family:'Inter';font-style:normal;font-weight:700;src:url(assets/fonts/Inter-700.woff2) format('woff2');}
+@font-face{font-family:'Inter';font-style:normal;font-weight:800;src:url(assets/fonts/Inter-800.woff2) format('woff2');}
+@font-face{font-family:'Archivo Black';font-style:normal;font-weight:400;src:url(assets/fonts/ArchivoBlack-400.woff2) format('woff2');}
+@font-face{font-family:'Oswald';font-style:normal;font-weight:600;src:url(assets/fonts/Oswald-600.woff2) format('woff2');}
+@font-face{font-family:'Oswald';font-style:normal;font-weight:700;src:url(assets/fonts/Oswald-700.woff2) format('woff2');}
+
+:root{
+  --accent: {{ACCENT}};
+  --bg: #05090f;
+  --muted: #8a94a6;
+  --body-text: #e9edf3;
+  --blue: #4a90e8;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1600px;height:1600px;overflow:hidden}
+body{
+  font-family:'Inter',sans-serif;
+  background:
+    radial-gradient(1100px 700px at 78% -8%, rgba(38,68,120,.55), rgba(38,68,120,0) 62%),
+    radial-gradient(900px 600px at 12% 108%, rgba(24,44,80,.35), rgba(24,44,80,0) 60%),
+    var(--bg);
+  color:#fff;
+  position:relative;
+}
+
+/* header */
+.header{
+  position:absolute; top:46px; left:54px; right:64px;
+  display:flex; align-items:center;
+}
+.header img{width:76px; height:74px; display:block}
+.brand{
+  margin-left:16px;
+  font-weight:800; font-size:31px; letter-spacing:6px; color:#fff;
+}
+.tag{
+  margin-left:auto;
+  font-weight:700; font-size:20px; letter-spacing:5px; color:var(--muted);
+}
+.tag .dot{color:#5a647a; margin:0 10px}
+.rule{
+  position:absolute; top:141px; left:64px; right:64px; height:2px;
+  background:linear-gradient(90deg, #3b82f6, rgba(59,130,246,.12));
+}
+
+/* center block */
+.center{
+  position:absolute; top:0; left:0; right:0; bottom:0;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  text-align:center;
+  padding:0 120px;
+  transform:translateY(-40px);
+}
+.kicker{
+  font-weight:700; font-size:32px; letter-spacing:10px; color:#93a0b4;
+  text-transform:uppercase;
+}
+.stat{
+  font-family:'Archivo Black','Inter',sans-serif;
+  font-size:{{STAT_SIZE}}px; line-height:1.02;
+  color:var(--accent);
+  filter:drop-shadow(0 0 34px color-mix(in srgb, var(--accent) 50%, transparent))
+         drop-shadow(0 0 90px color-mix(in srgb, var(--accent) 32%, transparent));
+  margin:14px 0 6px;
+  letter-spacing:-6px;
+}
+.headline{
+  font-family:'Oswald','Inter',sans-serif;
+  font-weight:700; font-size:52px; letter-spacing:6px;
+  color:color-mix(in srgb, var(--accent) 92%, #ffffff);
+  text-transform:uppercase;
+}
+.body{
+  margin-top:44px;
+  font-weight:600; font-size:40px; line-height:1.45; color:var(--body-text);
+  max-width:1240px;
+}
+
+/* candlestick band */
+.candles{
+  position:absolute; left:0; right:0; bottom:0; height:300px;
+  opacity:.85;
+}
+
+/* footer */
+.footer{
+  position:absolute; left:64px; right:64px; bottom:36px;
+  display:flex; align-items:baseline;
+  font-size:24px;
+}
+.handle{color:var(--blue); font-weight:700}
+.source{margin-left:auto; color:#5f6878; font-weight:400}
+.source b{font-weight:400; color:#4a5262; padding:0 12px}
+</style>
+</head>
+<body>
+  <div class="header">
+    <img src="assets/logo.png">
+    <div class="brand">{{BRAND}}</div>
+    <div class="tag">{{TAG}} <span class="dot">&middot;</span> {{DATE}}</div>
+  </div>
+  <div class="rule"></div>
+
+  <div class="center">
+    <div class="kicker">{{KICKER}}</div>
+    <div class="stat">{{STAT}}</div>
+    <div class="headline">{{HEADLINE}}</div>
+    <div class="body">{{BODY}}</div>
+  </div>
+
+  <svg class="candles" viewBox="0 0 1600 300" preserveAspectRatio="none"></svg>
+
+  <div class="footer">
+    <div class="handle">{{HANDLE}}</div>
+    <div class="source">Source: {{SOURCE}}<b>|</b>Not financial advice</div>
+  </div>
+
+<script>
+// deterministic candlestick silhouette
+(function(){
+  const svg = document.querySelector('.candles');
+  let s = 42;
+  const rnd = () => (s = (s * 1103515245 + 12345) % 2147483648) / 2147483648;
+  const N = 64, W = 1600 / N;
+  let mid = 170, parts = '';
+  for (let i = 0; i < N; i++) {
+    mid += (rnd() - 0.5) * 46;
+    mid = Math.max(90, Math.min(250, mid));
+    const bodyH = 14 + rnd() * 66;
+    const wickH = bodyH + 24 + rnd() * 56;
+    const x = i * W + W / 2;
+    const a = 0.25 + rnd() * 0.5;
+    parts += `<line x1="${x}" y1="${mid - wickH/2}" x2="${x}" y2="${mid + wickH/2}" stroke="#2b4a7a" stroke-opacity="${a*0.7}" stroke-width="2.5"/>`;
+    parts += `<rect x="${x - 5.5}" y="${mid - bodyH/2}" width="11" height="${bodyH}" fill="#2b4a7a" fill-opacity="${a}"/>`;
+  }
+  svg.innerHTML = parts;
+})();
+</script>
+</body>
+</html>
